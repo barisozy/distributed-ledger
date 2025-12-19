@@ -1,0 +1,64 @@
+name: Java CI with Gradle & Security Scan
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch: # Manuel tetikleme için
+
+jobs:
+  build-and-test:
+    name: Build, Test & Security Check
+    runs-on: ubuntu-latest
+
+    # Testcontainers için gerekli izinler
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle' # Build hızlandırmak için Gradle cache'i açıyoruz
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 1. BUILD & TEST (Unit + Integration)
+      # Testcontainers, GitHub Runner üzerindeki Docker socket'ini otomatik kullanır.
+      - name: Build with Gradle
+        run: ./gradlew build --no-daemon
+
+      # 2. TEST SONUÇLARINI YAYINLA
+      # Test patlarsa GitHub arayüzünde raporu görmek için
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: success() || failure() # Test başarısız olsa bile raporu bas
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+
+      # 3. GÜVENLİK TARAMASI (Trivy - Filesystem)
+      # Kodundaki dependency zaafiyetlerini ve konfigürasyon hatalarını bulur.
+      - name: Run Trivy Vulnerability Scanner (FS)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          hide-progress: false
+          format: 'table'
+          exit-code: '1' # Kritik açık bulursa build'i patlat (Senior kuralı!)
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+
+      # 4. DOCKER IMAGE BUILD (Opsiyonel - Production Readiness)
+      # Sadece build edip bırakıyoruz, pushlamıyoruz (kaynak harcamamak için)
+      - name: Build Docker Image
+        if: success()
+        run: docker build . --file Dockerfile --tag distributed-ledger:latest

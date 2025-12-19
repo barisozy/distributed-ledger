@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: distributed-ledger
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  # Database
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:ledger_db}
+    username: ${DB_USER:ledger_user}
+    password: ${DB_PASSWORD:secret-ledger-password}
+    driver-class-name: org.postgresql.Driver
+
+  # Redis
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD} # <-- EKLENDİ: Redis şifresini buraya da ekle
+
+  # Kafka
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+# ----------------------------------------------------
+# KRİTİK DÜZELTME BURADA
+# 'security' bloğu 'ledger'ın altından çıkarıldı.
+# Artık 'security.encryption.key' olarak erişilebilir.
+# ----------------------------------------------------
+# ... (DataSource ve Redis kısımları aynı kalabilir)
+
+# DÜZELTME: Standart Security Yapısı
+security:
+  encryption:
+    key: ${ENCRYPTION_KEY}
+  jwt:
+    secret: ${JWT_SECRET:dev-secret-key-min-256-bit}
+    expiration: ${JWT_EXPIRATION_MS:86400000}
+  # Eğer bu user bilgisi Basic Auth içinse burası doğru:
+  user:
+    name: ${ADMIN_USER}
+    password: ${ADMIN_PASSWORD}
+
+# Custom Config (Sadece iş mantığı ayarları kalsın)
+ledger:
+  audit:
+    enabled: true
+    retention-days: 2555

@@ -1,0 +1,44 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  # JPA / Hibernate: Production'da performans optimizasyonu
+  jpa:
+    show-sql: false # ASLA true yapma, PII loglara sızar!
+    properties:
+      hibernate:
+        format_sql: false
+        # Batch Insert/Update performans için kritik
+        jdbc:
+          batch_size: 50
+          order_inserts: true
+          order_updates: true
+    open-in-view: false # DB Connection havuzunu gereksiz meşgul etmemek için kapat
+
+  # Servlet Tuning
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+logging:
+  level:
+    root: INFO
+    com.distributed.ledger: INFO
+    # Framework loglarını sustur, sadece hataları gör
+    org.springframework: WARN
+    org.hibernate: WARN
+    io.lettuce: WARN
+    org.redisson: WARN
+  pattern:
+    # Log toplama araçları (ELK/Graylog) için JSON formatına uygun pattern önerilir
+    # Şimdilik standart ama trace-id içeren format:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - [TraceId=%X{traceId:-}] %msg%n"
+
+# Production'da Fallback YOK. Env Var yoksa uygulama patlamalı (Fail Fast).
+# Bu değerler docker-compose.yml veya K8s Secret'tan gelir.
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION_MS}

@@ -1,0 +1,37 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  # JPA / Hibernate: Geliştirme ortamında sorguları görmek hayat kurtarır.
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        # N+1 problemlerini yakalamak için istatistikleri aç
+        generate_statistics: true
+
+  # Dev ortamında Flyway temiz başlangıç yapabilsin (Dikkat: Veri silinir)
+  # flyway:
+  #   clean-disabled: false
+
+logging:
+  level:
+    root: INFO
+    com.distributed.ledger: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    # SQL parametrelerini görmek için (P6Spy yoksa Hibernate üzerinden)
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    # Redis bağlantı sorunlarını debug etmek için
+    io.lettuce.core: DEBUG
+    org.redisson: DEBUG
+
+# Dev ortamında JWT için varsayılan zayıf değerler (Env gelmezse fallback)
+security:
+  jwt:
+    secret: ${JWT_SECRET:dev-secret-key-must-be-at-least-256-bits-long-for-security}
+    expiration: ${JWT_EXPIRATION_MS:86400000} # 24 Saat
