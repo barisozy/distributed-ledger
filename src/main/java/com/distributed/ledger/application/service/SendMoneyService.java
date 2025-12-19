@@ -88,12 +88,12 @@ public class SendMoneyService implements SendMoneyUseCase {
 
                 sourceAccount.withdraw(command.amount());
                 targetAccount.deposit(command.amount());
+                transaction.complete();
 
                 saveTransactionPort.saveTransaction(transaction);
                 saveAccountPort.saveAccount(sourceAccount);
                 saveAccountPort.saveAccount(targetAccount);
 
-                transaction.complete();
 
                 // Event yayınlama transaction içinde olmalı (Outbox pattern için)
                 eventPublisher.publishEvent(new TransactionCreatedEvent(transaction));

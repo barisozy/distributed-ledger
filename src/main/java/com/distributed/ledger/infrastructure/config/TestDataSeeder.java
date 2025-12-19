@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Configuration
@@ -39,6 +40,8 @@ public class TestDataSeeder {
             alice.setBalance(new BigDecimal("1000.00"));
             alice.setCurrency("TRY");
             alice.setStatus("ACTIVE");
+            alice.setCreatedAt(LocalDateTime.now()); // <-- EKLE
+            alice.setUpdatedAt(LocalDateTime.now());
 
             // 2. Alıcı (Bob)
             AccountEntity bob = new AccountEntity();
@@ -48,6 +51,8 @@ public class TestDataSeeder {
             bob.setBalance(BigDecimal.ZERO);
             bob.setCurrency("TRY");
             bob.setStatus("ACTIVE");
+            bob.setCreatedAt(LocalDateTime.now());   // <-- EKLE
+            bob.setUpdatedAt(LocalDateTime.now());
 
             accountRepository.save(alice);
             accountRepository.save(bob);
