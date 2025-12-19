@@ -19,7 +19,6 @@ import java.util.Base64;
 @Converter
 public class PiiCryptoConverter implements AttributeConverter<String, String> {
 
-    // AES/GCM/NoPadding: Hem gizlilik hem de bütünlük (integrity) sağlar.
     private static final String ALGORITHM = "AES/GCM/NoPadding";
     private static final int TAG_LENGTH_BIT = 128; // GCM Authentication Tag uzunluğu (16 byte)
     private static final int IV_LENGTH_BYTE = 12;  // GCM için önerilen IV uzunluğu (96 bit)
