@@ -40,6 +40,7 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+
 # Eclipse
 .apt_generated
 .classpath
@@ -68,6 +69,8 @@ bin/
 # SECRETS - NEVER COMMIT THESE!
 application-local.yml
 application-secrets.yml
+application-prod.yml
+application-dev.yml
 *.env
 .env
 .env.local

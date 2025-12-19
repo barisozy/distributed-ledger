@@ -73,7 +73,7 @@ services:
   # 6. PGADMIN (PostgreSQL UI)
   # ----------------------------
   pgadmin:
-    image: docker.io/library/dpage/pgadmin4:8
+    image: docker.io/dpage/pgadmin4:8
     container_name: ledger-pgadmin
     restart: unless-stopped
     depends_on:
