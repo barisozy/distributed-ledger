@@ -1,0 +1,40 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  threads:
+    virtual:
+      enabled: true
+
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          batch_size: 50
+          order_inserts: true
+          order_updates: true
+    open-in-view: false
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+logging:
+  level:
+    root: INFO
+    com.distributed.ledger: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
+    io.lettuce: WARN
+    org.redisson: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - [TraceId=%X{traceId:-}] %msg%n"
+
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION_MS}

@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: distributed-ledger
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  threads:
+    virtual:
+      enabled: true
+
+
+  # Database
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:ledger_db}
+    username: ${DB_USER:ledger_user}
+    password: ${DB_PASSWORD:secret-ledger-password}
+    driver-class-name: org.postgresql.Driver
+
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      pool-name: LedgerHikariCP
+
+  # Redis
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
+
+  # Kafka
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+security:
+  encryption:
+    key: ${ENCRYPTION_KEY}
+  jwt:
+    secret: ${JWT_SECRET:dev-secret-key-min-256-bit}
+    expiration: ${JWT_EXPIRATION_MS:86400000}
+  user:
+    name: ${ADMIN_USER}
+    password: ${ADMIN_PASSWORD}
+
+# Custom Config
+ledger:
+  audit:
+    enabled: true
+    retention-days: 2555
+  outbox:
+    batch-size: 50
+    kafka-topic: transaction-events
+    polling-interval-ms: 2000
+    retention-days: 7
+    publish-timeout-sec: 2
