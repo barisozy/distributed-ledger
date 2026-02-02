@@ -2,7 +2,7 @@ spring:
   application:
     name: distributed-ledger
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
+    active: ${SPRING_PROFILES_ACTIVE}
 
   threads:
     virtual:
@@ -27,7 +27,7 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD}
+#      password: ${REDIS_PASSWORD}
 
   # Kafka
   kafka:
@@ -45,6 +45,8 @@ management:
 security:
   encryption:
     key: ${ENCRYPTION_KEY}
+  hash:
+    pepper: ${SECURITY_HASH_PEPPER}
   jwt:
     secret: ${JWT_SECRET:dev-secret-key-min-256-bit}
     expiration: ${JWT_EXPIRATION_MS:86400000}

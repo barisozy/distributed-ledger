@@ -13,3 +13,4 @@ CREATE TABLE outbox_events (
 
 CREATE INDEX idx_outbox_processed ON outbox_events(processed) WHERE processed = FALSE;
 CREATE INDEX idx_outbox_retry ON outbox_events(retry_count) WHERE processed = FALSE;
+CREATE INDEX idx_outbox_cleanup ON outbox_events(processed, updated_at);

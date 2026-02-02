@@ -1,12 +1,4 @@
 spring:
-  config:
-    activate:
-      on-profile: prod
-
-  threads:
-    virtual:
-      enabled: true
-
   jpa:
     show-sql: false
     properties:
@@ -33,8 +25,3 @@ logging:
     org.redisson: WARN
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - [TraceId=%X{traceId:-}] %msg%n"
-
-security:
-  jwt:
-    secret: ${JWT_SECRET}
-    expiration: ${JWT_EXPIRATION_MS}

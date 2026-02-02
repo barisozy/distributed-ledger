@@ -1,12 +1,4 @@
 spring:
-  config:
-    activate:
-      on-profile: dev
-
-  threads:
-    virtual:
-      enabled: true
-
   jpa:
     show-sql: true
     properties:
@@ -26,7 +18,3 @@ logging:
     io.lettuce.core: DEBUG
     org.redisson: DEBUG
 
-security:
-  jwt:
-    secret: ${JWT_SECRET:dev-secret-key-must-be-at-least-256-bits-long-for-security}
-    expiration: ${JWT_EXPIRATION_MS:86400000}
