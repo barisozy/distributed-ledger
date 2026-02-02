@@ -72,6 +72,7 @@ tasks.named('test') {
         excludeTags 'integration'
         exclude '**/*IntegrationTest.class'
     }
+    environment "SPRING_PROFILES_ACTIVE", "test"
     jvmArgs('-Djdk.tracePinnedThreads=short')
 }
 
@@ -81,6 +82,7 @@ tasks.register('integrationTest', Test) {
     }
     description = 'Runs integration tests with Testcontainers'
     group = 'verification'
+    environment "SPRING_PROFILES_ACTIVE", "test"
     jvmArgs('-Djdk.tracePinnedThreads=short')
     shouldRunAfter test
 
