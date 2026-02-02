@@ -1,6 +1,5 @@
 package com.distributed.ledger.infrastructure.adapter.persistence;
 
-import com.distributed.ledger.domain.exception.DomainException;
 import com.distributed.ledger.domain.model.Account;
 import com.distributed.ledger.domain.model.AccountId;
 import com.distributed.ledger.domain.port.out.LoadAccountPort;
@@ -9,17 +8,29 @@ import com.distributed.ledger.infrastructure.adapter.persistence.entity.AccountE
 import com.distributed.ledger.infrastructure.adapter.persistence.mapper.AccountMapper;
 import com.distributed.ledger.infrastructure.adapter.persistence.repository.SpringDataAccountRepository;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.Optional;
 
 @Component
-@RequiredArgsConstructor
 public class AccountPersistenceAdapter implements LoadAccountPort, SaveAccountPort {
 
     private final SpringDataAccountRepository accountRepository;
     private final AccountMapper accountMapper;
+    private final String pepper;
+
+    public AccountPersistenceAdapter(SpringDataAccountRepository accountRepository,
+                                     AccountMapper accountMapper,
+                                     @Value("${security.hash.pepper}") String pepper) {
+        this.accountRepository = accountRepository;
+        this.accountMapper = accountMapper;
+        this.pepper = pepper;
+    }
 
     @Override
     public Account loadAccount(AccountId accountId) {
@@ -31,7 +42,8 @@ public class AccountPersistenceAdapter implements LoadAccountPort, SaveAccountPo
 
     @Override
     public Optional<Account> loadAccount(String accountNumber) {
-        return accountRepository.findByAccountNumber(accountNumber)
+        String hash = computeHash(accountNumber);
+        return accountRepository.findByAccountNumberHash(hash)
                 .map(accountMapper::toDomain);
     }
 
@@ -44,6 +56,20 @@ public class AccountPersistenceAdapter implements LoadAccountPort, SaveAccountPo
                 })
                 .orElseGet(() -> accountMapper.toEntity(account));
 
+        String hash = computeHash(account.getAccountNumber().value());
+        entity.setAccountNumberHash(hash);
+
         accountRepository.saveAndFlush(entity);
+    }
+
+    private String computeHash(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            String inputWithPepper = input + pepper;
+            byte[] encodedHash = digest.digest(inputWithPepper.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(encodedHash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Hashing algorithm not found", e);
+        }
     }
 }

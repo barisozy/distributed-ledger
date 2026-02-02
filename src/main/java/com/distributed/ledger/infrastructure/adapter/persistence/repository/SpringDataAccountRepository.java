@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface SpringDataAccountRepository extends JpaRepository<AccountEntity, UUID> {
-    Optional<AccountEntity> findByAccountNumber(String accountNumber);
+    Optional<AccountEntity> findByAccountNumberHash(String accountNumberHash);
 }

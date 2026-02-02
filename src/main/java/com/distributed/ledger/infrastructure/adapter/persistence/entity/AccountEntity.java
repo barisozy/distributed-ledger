@@ -23,8 +23,11 @@ public class AccountEntity {
     private UUID id;
 
     @Convert(converter = PiiCryptoConverter.class)
-    @Column(name = "account_number", unique = true, nullable = false)
+    @Column(name = "account_number", nullable = false)
     private String accountNumber;
+
+    @Column(name = "account_number_hash", unique = true, nullable = false)
+    private String accountNumberHash;
 
     @Convert(converter = PiiCryptoConverter.class)
     @Column(name = "account_name", nullable = false)

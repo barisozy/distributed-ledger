@@ -7,7 +7,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Accounts table
 CREATE TABLE accounts (
                           id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-                          account_number VARCHAR(50) UNIQUE NOT NULL,
+                          account_number VARCHAR(255) NOT NULL,
+                          account_number_hash VARCHAR(64) UNIQUE NOT NULL,
                           account_name VARCHAR(255) NOT NULL,
                           balance DECIMAL(19, 4) NOT NULL DEFAULT 0.0000,
                           currency VARCHAR(3) NOT NULL,
@@ -55,13 +56,13 @@ CREATE TABLE audit_log (
                            action VARCHAR(50) NOT NULL,
                            user_id VARCHAR(100),
                            changes JSONB,
-                           ip_address INET,
+                           ip_address varchar(45),
                            user_agent TEXT,
                            created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 3. Indexes
-CREATE INDEX idx_accounts_number ON accounts(account_number);
+CREATE INDEX idx_accounts_number_hash ON accounts(account_number_hash);
 CREATE INDEX idx_accounts_status ON accounts(status);
 
 CREATE INDEX idx_transactions_reference ON transactions(transaction_reference);
@@ -91,6 +92,8 @@ CREATE TRIGGER update_accounts_updated_at BEFORE UPDATE ON accounts
 
 -- 5. Comments
 COMMENT ON TABLE accounts IS 'Stores account information';
+COMMENT ON COLUMN accounts.account_number IS 'Encrypted account number (PII)';
+COMMENT ON COLUMN accounts.account_number_hash IS 'Blind index for account number uniqueness and lookup';
 COMMENT ON TABLE transactions IS 'Stores transaction records';
 COMMENT ON TABLE ledger_entries IS 'Double-entry bookkeeping ledger entries';
 COMMENT ON TABLE audit_log IS 'Audit trail for all operations';
