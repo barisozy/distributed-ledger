@@ -113,6 +113,7 @@ class MoneyTransferIntegrationTest extends IntegrationTestBase {
         AccountEntity entity = new AccountEntity();
         entity.setId(id);
         entity.setAccountNumber(number);
+        entity.setAccountNumberHash("TEST-HASH-" + number);
         entity.setAccountName(name);
         entity.setBalance(balance);
         entity.setCurrency("TRY");

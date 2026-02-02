@@ -44,6 +44,7 @@ public abstract class IntegrationTestBase {
         String secureKey = "12345678901234567890123456789012";
         registry.add("ENCRYPTION_KEY", () -> secureKey);
         registry.add("security.encryption.key", () -> secureKey);
+        registry.add("security.hash.pepper", () -> "test-environment-dummy-pepper-value-123456");
 
         registry.add("ADMIN_USER", () -> "test-admin");
         registry.add("security.user.name", () -> "test-admin");
