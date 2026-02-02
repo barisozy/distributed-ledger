@@ -21,7 +21,7 @@ public final class Money {
         if (currency == null) {
             throw new IllegalArgumentException("Currency cannot be null");
         }
-        this.amount = amount.setScale(currency.getDefaultFractionDigits(), RoundingMode.HALF_UP);
+        this.amount = amount.setScale(currency.getDefaultFractionDigits(), RoundingMode.HALF_EVEN);
         this.currency = currency;
     }
 

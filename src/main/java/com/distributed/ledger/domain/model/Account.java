@@ -7,12 +7,12 @@ public class Account {
 
     private final AccountId id;
     private final String name;
-    private final String accountNumber;
+    private final AccountNumber accountNumber;
     private Money balance;
     private AccountStatus status;
     private Long version;
 
-    private Account(AccountId id, String name, String accountNumber, Money balance, AccountStatus status, Long version) {
+    private Account(AccountId id, String name, AccountNumber accountNumber, Money balance, AccountStatus status, Long version) {
         this.id = id;
         this.name = name;
         this.accountNumber = accountNumber;
@@ -21,19 +21,26 @@ public class Account {
         this.version = version;
     }
 
-    public static Account create(String accountNumber, String name, Money initialBalance) {
+    public static Account create(String accountNumberStr, String name, Money initialBalance) {
         return new Account(
                 AccountId.generate(),
                 name,
-                accountNumber,
+                AccountNumber.of(accountNumberStr),
                 initialBalance,
                 AccountStatus.ACTIVE,
                 0L
         );
     }
 
-    public static Account with(AccountId id, String name, String accountNumber, Money balance, AccountStatus status, Long version) {
-        return new Account(id, name, accountNumber, balance, status, version);
+    public static Account with(AccountId id, String name, String accountNumberStr, Money balance, AccountStatus status, Long version) {
+        return new Account(
+                id,
+                name,
+                AccountNumber.of(accountNumberStr),
+                balance,
+                status,
+                version
+        );
     }
 
 
@@ -62,7 +69,7 @@ public class Account {
 
     public AccountId getId() { return id; }
     public String getName() { return name; }
-    public String getAccountNumber() { return accountNumber; }
+    public AccountNumber getAccountNumber() { return accountNumber; }
     public Money getBalance() { return balance; }
     public AccountStatus getStatus() { return status; }
     public Long getVersion() { return version; }

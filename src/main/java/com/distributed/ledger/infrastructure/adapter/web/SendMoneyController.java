@@ -5,6 +5,7 @@ import com.distributed.ledger.domain.port.in.SendMoneyCommand;
 import com.distributed.ledger.domain.port.in.SendMoneyUseCase;
 import com.distributed.ledger.infrastructure.adapter.web.dto.ApiErrorResponse;
 import com.distributed.ledger.infrastructure.adapter.web.dto.SendMoneyRequest;
+import com.distributed.ledger.infrastructure.adapter.web.mapper.SendMoneyMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SendMoneyController {
 
     private final SendMoneyUseCase sendMoneyUseCase;
+    private final SendMoneyMapper sendMoneyMapper;
 
     @Operation(summary = "Send Money", description = "Transfers money from one account to another with idempotency check and optimistic locking.")
     @ApiResponses(value = {
@@ -41,14 +43,7 @@ public class SendMoneyController {
     })
     @PostMapping("/send")
     public ResponseEntity<Void> sendMoney(@RequestBody @Valid SendMoneyRequest request) {
-
-        SendMoneyCommand command = new SendMoneyCommand(
-                request.fromAccountId(),
-                request.toAccountId(),
-                Money.of(request.amount(), request.currency()),
-                request.reference()
-        );
-
+        SendMoneyCommand command = sendMoneyMapper.toCommand(request);
         boolean success = sendMoneyUseCase.sendMoney(command);
         if (!success) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

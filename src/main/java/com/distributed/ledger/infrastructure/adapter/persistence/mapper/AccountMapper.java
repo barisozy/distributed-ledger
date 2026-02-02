@@ -24,7 +24,7 @@ public class AccountMapper {
     public AccountEntity toEntity(Account domain) {
         AccountEntity entity = new AccountEntity();
         entity.setId(domain.getId().value());
-        entity.setAccountNumber(domain.getAccountNumber());
+        entity.setAccountNumber(domain.getAccountNumber().value());
         entity.setAccountName(domain.getName());
         entity.setBalance(domain.getBalance().getAmount());
         entity.setCurrency(domain.getBalance().getCurrencyCode());
@@ -36,7 +36,7 @@ public class AccountMapper {
     }
 
     public void updateEntity(Account domain, AccountEntity entity) {
-        entity.setAccountNumber(domain.getAccountNumber());
+        entity.setAccountNumber(domain.getAccountNumber().value());
         entity.setAccountName(domain.getName());
         entity.setBalance(domain.getBalance().getAmount());
         entity.setCurrency(domain.getBalance().getCurrencyCode());
