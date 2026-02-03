@@ -361,26 +361,6 @@ infrastructure/
 docs/adr/            # Architecture decisions - read these!
 ```
 
-## 🤝 Contributing
-
-1. Read Architecture Decision Records in `docs/adr/`:
-   - ADR-001: Hexagonal Architecture structure
-   - ADR-002: PostgreSQL vs MongoDB choice
-   - ADR-003: Optimistic locking strategy
-   - ADR-004: Domain-Entity mapper implementation
-2. Follow hexagonal architecture principles
-3. Write tests for new features
-4. Update documentation (including ADRs for significant changes)
-5. Submit PR with clear description
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
-
-## 📄 License
-
-[Your License Here]
-
-[Add your license here]
-
 ## 📚 Additional Documentation
 
 - [Architecture Decision Records](docs/adr/)
