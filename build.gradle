@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.9'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
+    id "org.sonarqube" version "5.0.0.4638"
 }
 
 group = 'com.distributed'
@@ -22,6 +24,85 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+test {
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test, 'integrationTest'
+    reports {
+        xml.required = true
+        html.required = true
+    }
+
+    getExecutionData().setFrom(fileTree(layout.buildDirectory.get().asFile).include("/jacoco/*.exec"))
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "**/config/**",
+                    "**/dto/**",
+                    "**/entity/**",
+                    "**/exception/**",
+                    "**/mapper/**",
+                    "**/*Application*",
+                    "**/k6/**"
+            ])
+        }))
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+
+    getExecutionData().setFrom(fileTree(layout.buildDirectory.get().asFile).include("/jacoco/*.exec"))
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "**/config/**",
+                    "**/dto/**",
+                    "**/entity/**",
+                    "**/exception/**",
+                    "**/mapper/**",
+                    "**/*Application*",
+                    "**/k6/**"
+            ])
+        }))
+    }
+
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.80
+            }
+        }
+    }
+}
+
+sonar {
+    properties {
+        property "sonar.projectKey", "distributed-ledger"
+        property "sonar.projectName", "Distributed Ledger System"
+        property "sonar.host.url", "http://localhost:9000"
+        property "sonar.token", System.getenv("SONAR_TOKEN")
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
+
+        property "sonar.coverage.exclusions",
+                "**/config/**, " +
+                        "**/dto/**, " +
+                        "**/entity/**, " +
+                        "**/exception/**, " +
+                        "**/mapper/**, " +
+                        "**/*Application*, " +
+                        "**/k6/**"
+    }
 }
 
 dependencies {
